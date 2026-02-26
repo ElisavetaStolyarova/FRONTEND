@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; img-src * data:; connect-src *;">
+  <title>Регистрация</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 50%, #a78bfa 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .form {
+      width: 400px;
+      background: rgba(15, 15, 23, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 24px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.5s ease-out;
+    }
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    h1 {
+      color: #a78bfa;
+      font-size: 32px;
+      margin-bottom: 30px;
+      text-align: center;
+      letter-spacing: 2px;
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 15px;
+    }
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+      border-radius: 2px;
+    }
+    input {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 14px 16px;
+      width: 100%;
+      border-radius: 12px;
+      color: white;
+      margin: 8px 0 16px 0;
+      box-sizing: border-box;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+      background: #2d3748;
+    }
+    input:hover {
+      border-color: #a78bfa;
+      background: #2d3748;
+    }
+    .btn-register {
+      width: 56px;
+      height: 56px;
+      margin: 20px auto 25px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+    }
+    .btn-register:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.6);
+    }
+    .btn-register:active {
+      transform: translateY(0);
+    }
+    .link {
+      color: #a78bfa;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .link:hover {
+      color: #8b5cf6;
+      text-decoration: underline;
+    }
+    .login-link {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+    .error-message {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 16px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      display: none;
+    }
+    .success-message {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 16px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: none;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    label {
+      color: #e2e8f0;
+      font-size: 14px;
+      display: block;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form">
+    <h1>РЕГИСТРАЦИЯ</h1>
+    
+    <div class="error-message" id="errorMessage"></div>
+    <div class="success-message" id="successMessage"></div>
+    <label>Ваше имя</label>
+    <input type="text" id="full_name" placeholder="Имя">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="E-mail">
+    <label>Телефон (необязательно)</label>
+    <input type="text" id="phone" placeholder="+7 *** ** **" >
+    <label>Пароль</label>
+    <input type="password" id="password" placeholder="Минимум 6 символов">
+    <label>Подтвердите пароль</label>
+    <input type="password" id="confirm_password" placeholder="Повторите пароль">
+    <button class="btn-register" onclick="handleRegistration()" id="registerBtn">✓</button>
+    
+    <div class="login-link">
+      Уже есть аккаунт? <a href="indexx.html" class="link">Войти</a>
+    </div>
+  </div>
+
+  <script>
+    async function handleRegistration() {
+      const full_name = document.getElementById('full_name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+      
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      const registerBtn = document.getElementById('registerBtn');
+
+      // Валидация
+      if (!full_name || !email || !password || !confirmPassword) {
+        showError('Пожалуйста, заполните все обязательные поля');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showError('Пароли не совпадают');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('Пароль должен содержать не менее 6 символов');
+        return;
+      }
+
+      if (!email.includes('@') || !email.includes('.')) {
+        showError('Введите корректный email');
+        return;
+      }
+
+      // Показываем загрузку
+      const originalText = registerBtn.innerHTML;
+      registerBtn.innerHTML = '<span class="loading"></span>';
+      registerBtn.disabled = true;
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            full_name, 
+            email, 
+            phone, 
+            password 
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Показываем успех
+          successDiv.textContent = 'Регистрация успешна! Перенаправляем на вход...';
+          successDiv.style.display = 'block';
+          
+          // Очищаем форму
+          document.getElementById('full_name').value = '';
+          document.getElementById('email').value = '';
+          document.getElementById('phone').value = '';
+          document.getElementById('password').value = '';
+          document.getElementById('confirm_password').value = '';
+          
+          // Перенаправляем на страницу входа через 2 секунды
+          setTimeout(() => {
+            window.location.href = 'indexx.html';
+          }, 2000);
+        } else {
+          showError(data.error || 'Ошибка регистрации');
+          registerBtn.innerHTML = originalText;
+          registerBtn.disabled = false;
+        }
+      } catch (error) {
+        console.error('Ошибка:', error);
+        showError('Ошибка подключения к серверу');
+        registerBtn.innerHTML = originalText;
+        registerBtn.disabled = false;
+      }
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

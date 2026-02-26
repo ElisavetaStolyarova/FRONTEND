@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; img-src * data:; connect-src *;">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Создание записи</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f0f17;
+      --card: #1a1a2e;
+      --purple: #8b5cf6;
+      --purple-dark: #7c3aed;
+      --purple-light: #a78bfa;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --danger: #f87171;
+      --success: #10b981;
+      --border: #2d3748;
+      --input-bg: #1e293b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 50%, #a78bfa 100%);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: rgba(15, 15, 23, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      padding: 40px;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      color: var(--purple-light);
+      font-size: 36px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      color: var(--purple-light);
+      font-size: 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      color: var(--text);
+      font-size: 14px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--purple);
+    }
+
+    .datetime-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .time-slot {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .time-slot:hover {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: var(--purple);
+    }
+
+    .time-slot.selected {
+      background: var(--purple);
+      color: white;
+    }
+
+    .time-slot.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+      border: none;
+      border-radius: 999px;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 30px 0 20px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.6);
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .success-message {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>СДЕЛАТЬ ЗАПИСЬ</h1>
+
+    <div class="error-message" id="errorMessage"></div>
+    <div class="success-message" id="successMessage"></div>
+
+    <form id="bookingForm">
+      <!-- Выбор специалиста -->
+      <div class="form-section">
+        <div class="section-title">
+          <i class="fas fa-user-md"></i>
+          <span>Выбор специалиста</span>
+        </div>
+        <div class="form-group">
+          <select id="specialist" required>
+            <option value="">Загрузка специалистов...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Выбор услуги -->
+      <div class="form-section">
+        <div class="section-title">
+          <i class="fas fa-tools"></i>
+          <span>Выбор услуги</span>
+        </div>
+        <div class="form-group">
+          <select id="service" required>
+            <option value="">Сначала выберите специалиста</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Выбор даты -->
+      <div class="form-section">
+        <div class="section-title">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Выбор даты</span>
+        </div>
+        <div class="form-group">
+          <input type="date" id="date" required min="">
+        </div>
+      </div>
+
+      <!-- Выбор времени -->
+      <div class="form-section">
+        <div class="section-title">
+          <i class="fas fa-clock"></i>
+          <span>Выбор времени</span>
+        </div>
+        <div class="time-slots" id="timeSlots">
+          <p style="color: var(--text-light); text-align: center;">Выберите специалиста, услугу и дату</p>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <i class="fas fa-check-circle"></i> Записаться
+      </button>
+    </form>
+  </div>
+
+  <script>
+    let selectedTime = null;
+    let availableSlots = [];
+
+    // Проверка авторизации
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'indexx.html';
+        return;
+      }
+      
+      loadSpecialists();
+      
+      // Устанавливаем минимальную дату - сегодня
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('date').min = today;
+    });
+
+    // Загрузка специалистов
+    async function loadSpecialists() {
+      try {
+        const response = await fetch('/api/staff');
+        const data = await response.json();
+        
+        const select = document.getElementById('specialist');
+        select.innerHTML = '<option value="">Выберите специалиста</option>';
+        
+        data.staff.forEach(s => {
+          select.innerHTML += `<option value="${s.id}">${s.name} - ${s.specialization || 'Специалист'}</option>`;
+        });
+      } catch (error) {
+        showError('Ошибка загрузки специалистов');
+      }
+    }
+
+    // При изменении специалиста загружаем услуги
+    document.getElementById('specialist').addEventListener('change', function() {
+      const specialistId = this.value;
+      if (specialistId) {
+        loadServices(specialistId);
+      } else {
+        document.getElementById('service').innerHTML = '<option value="">Сначала выберите специалиста</option>';
+      }
+    });
+
+    // Загрузка услуг для специалиста
+    async function loadServices(specialistId) {
+      try {
+        const response = await fetch(`/api/services`);
+        const data = await response.json();
+        
+        const select = document.getElementById('service');
+        select.innerHTML = '<option value="">Выберите услугу</option>';
+        
+        data.services.forEach(s => {
+          select.innerHTML += `<option value="${s.id}" data-duration="${s.duration}">${s.title} - ${s.duration} мин (${s.price} ₽)</option>`;
+        });
+      } catch (error) {
+        showError('Ошибка загрузки услуг');
+      }
+    }
+
+    // При изменении даты или услуги загружаем доступное время
+    document.getElementById('date').addEventListener('change', loadAvailableSlots);
+    document.getElementById('service').addEventListener('change', loadAvailableSlots);
+
+    // Загрузка доступных слотов времени
+    async function loadAvailableSlots() {
+      const specialistId = document.getElementById('specialist').value;
+      const serviceId = document.getElementById('service').value;
+      const date = document.getElementById('date').value;
+
+      if (!specialistId || !serviceId || !date) {
+        document.getElementById('timeSlots').innerHTML = '<p style="color: var(--text-light); text-align: center;">Выберите специалиста, услугу и дату</p>';
+        return;
+      }
+
+      document.getElementById('timeSlots').innerHTML = '<p style="color: var(--text-light); text-align: center;">Загрузка...</p>';
+
+      try {
+        const response = await fetch(`/api/appointments/available?staff_id=${specialistId}&date=${date}&service_id=${serviceId}`);
+        const slots = await response.json();
+        
+        availableSlots = slots;
+        renderTimeSlots(slots);
+      } catch (error) {
+        showError('Ошибка загрузки доступного времени');
+      }
+    }
+
+    // Отображение слотов времени
+    function renderTimeSlots(slots) {
+      const container = document.getElementById('timeSlots');
+      
+      if (slots.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-light); text-align: center;">Нет доступного времени</p>';
+        return;
+      }
+
+      let html = '';
+      slots.forEach(time => {
+        const isSelected = selectedTime === time;
+        html += `<div class="time-slot ${isSelected ? 'selected' : ''}" onclick="selectTime('${time}')">${time}</div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Выбор времени
+    function selectTime(time) {
+      selectedTime = time;
+      renderTimeSlots(availableSlots);
+    }
+
+    // Отправка формы
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const token = localStorage.getItem('token');
+      const specialistId = document.getElementById('specialist').value;
+      const serviceId = document.getElementById('service').value;
+      const date = document.getElementById('date').value;
+      const serviceOption = document.getElementById('service').selectedOptions[0];
+      const duration = serviceOption?.dataset.duration || 60;
+
+      if (!specialistId || !serviceId || !date || !selectedTime) {
+        showError('Заполните все поля и выберите время');
+        return;
+      }
+
+      // Формируем дату и время
+      const start_at = `${date}T${selectedTime}:00`;
+
+      const btn = document.getElementById('submitBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="loading"></span> Сохранение...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/api/appointments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            org_id: '8ce35410-107e-43c8-9207-0e0bdea463a2',
+            staff_id: specialistId,
+            service_id: serviceId,
+            start_at
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('successMessage').style.display = 'block';
+          document.getElementById('successMessage').textContent = 'Запись успешно создана!';
+          
+          setTimeout(() => {
+            window.location.href = 'client.html';
+          }, 2000);
+        } else {
+          showError(data.error || 'Ошибка при создании записи');
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      } catch (error) {
+        showError('Ошибка подключения к серверу');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

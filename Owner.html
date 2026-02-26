@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кабинет владельца | Управление сотрудниками</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f0f17;
+      --card: #1a1a2e;
+      --purple: #8b5cf6;
+      --purple-dark: #7c3aed;
+      --purple-light: #a78bfa;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --danger: #f87171;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --border: #2d3748;
+      --input-bg: #1e293b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 50%, #a78bfa 100%);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(15, 15, 23, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--purple), #4c1d95);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: white;
+      border: 3px solid var(--purple-light);
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-size: 28px;
+      color: var(--purple-light);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .profile-badge {
+      background: var(--purple);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-email {
+      color: var(--text-light);
+      font-size: 16px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--purple-light);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab:hover {
+      color: var(--purple-light);
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .tab.active {
+      background: var(--purple);
+      color: white;
+    }
+
+    .tab-content {
+      min-height: 500px;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      color: var(--purple-light);
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      color: var(--text-light);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--purple);
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 15px 10px;
+      color: var(--text-light);
+      font-weight: 500;
+      font-size: 14px;
+      border-bottom: 2px solid var(--purple);
+    }
+
+    td {
+      padding: 12px 10px;
+      color: var(--text);
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:hover {
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    .btn {
+      background: var(--purple);
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: var(--purple-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--purple);
+      color: var(--purple-light);
+      transform: none;
+    }
+
+    .btn-success {
+      background: var(--success);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+      margin: 0 3px;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+    }
+
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .status-badge.inactive {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <i class="fas fa-crown"></i>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name" id="ownerName">
+          Загрузка...
+          <span class="profile-badge">
+            <i class="fas fa-crown"></i> Владелец
+          </span>
+        </div>
+        <div class="profile-email" id="ownerEmail">
+          <i class="fas fa-envelope"></i> загрузка...
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="totalStaff">0</div>
+            <div class="stat-label">Сотрудников</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="activeToday">0</div>
+            <div class="stat-label">Активных</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="totalServices">0</div>
+            <div class="stat-label">Услуг</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-success" id="successAlert"></div>
+    <div class="alert alert-error" id="errorAlert"></div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="openTab(event, 'dashboard')">
+        <i class="fas fa-home"></i> Главная
+      </button>
+      <button class="tab" onclick="openTab(event, 'create')">
+        <i class="fas fa-user-plus"></i> Добавить сотрудника
+      </button>
+      <button class="tab" onclick="openTab(event, 'list')">
+        <i class="fas fa-users"></i> Список сотрудников
+      </button>
+      <button class="tab" onclick="openTab(event, 'search')">
+        <i class="fas fa-search"></i> Поиск
+      </button>
+    </div>
+
+    <div class="tab-content">
+      <div id="dashboard" class="tab-pane active">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-chart-bar"></i>
+              Статистика
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div style="text-align: center; padding: 20px; background: var(--input-bg); border-radius: 12px;">
+              <div style="font-size: 36px; color: var(--purple-light);" id="statTotal">0</div>
+              <div style="color: var(--text-light);">Всего сотрудников</div>
+            </div>
+            <div style="text-align: center; padding: 20px; background: var(--input-bg); border-radius: 12px;">
+              <div style="font-size: 36px; color: var(--success);" id="statActive">0</div>
+              <div style="color: var(--text-light);">Активных</div>
+            </div>
+            <div style="text-align: center; padding: 20px; background: var(--input-bg); border-radius: 12px;">
+              <div style="font-size: 36px; color: var(--warning);" id="statNew">0</div>
+              <div style="color: var(--text-light);;">Новых за месяц</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-history"></i>
+              Последние добавленные
+            </div>
+          </div>
+          <div class="table-container">
+            <table id="recentStaffTable">
+              <thead>
+                <tr>
+                  <th>Имя</th>
+                  <th>Email</th>
+                  <th>Специализация</th>
+                  <th>Дата</th>
+                </tr>
+              </thead>
+              <tbody id="recentStaffList">
+                <tr><td colspan="4" style="text-align: center;">Загрузка...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="create" class="tab-pane">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-user-plus"></i>
+              Добавить нового сотрудника
+            </div>
+          </div>
+
+          <form id="createStaffForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Имя</label>
+                <input type="text" class="form-control" id="firstName" required>
+              </div>
+              <div class="form-group">
+                <label>Фамилия</label>
+                <input type="text" class="form-control" id="lastName" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+
+            <div class="form-group">
+              <label>Пароль</label>
+              <input type="password" class="form-control" id="password" required>
+            </div>
+
+            <div class="form-group">
+              <label>Специализация</label>
+              <select class="form-control" id="specialization" required>
+                <option value="">Выберите специализацию</option>
+                <option value="UX/UI дизайнер">UX/UI дизайнер</option>
+                <option value="Веб-разработчик">Веб-разработчик</option>
+                <option value="Тестировщик">Тестировщик</option>
+                <option value="Project Manager">Project Manager</option>
+                <option value="Бэкенд-разработчик">Бэкенд-разработчик</option>
+              </select>
+            </div>
+
+            <div style="display: flex; gap: 15px; justify-content: flex-end;">
+              <button type="button" class="btn btn-outline" onclick="clearForm()">
+                <i class="fas fa-times"></i> Очистить
+              </button>
+              <button type="submit" class="btn" id="createBtn">
+                <i class="fas fa-save"></i> Добавить в базу данных
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="list" class="tab-pane">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-users"></i>
+              Все сотрудники
+            </div>
+            <div id="staffCount">0 сотрудников</div>
+          </div>
+
+          <div class="table-container">
+            <table id="staffTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Имя</th>
+                  <th>Email</th>
+                  <th>Специализация</th>
+                  <th>Статус</th>
+                  <th>Дата</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody id="staffList">
+                <tr><td colspan="7" style="text-align: center;">Загрузка...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="search" class="tab-pane">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-search"></i>
+              Поиск сотрудников
+            </div>
+          </div>
+
+          <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Введите имя, email или специализацию...">
+            <button class="btn" onclick="searchStaff()">
+              <i class="fas fa-search"></i> Найти
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Имя</th>
+                  <th>Email</th>
+                  <th>Специализация</th>
+                  <th>Статус</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody id="searchResults">
+                <tr><td colspan="5" style="text-align: center;">Введите данные для поиска</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; text-align: right;">
+      <button class="btn btn-outline" style="border-color: var(--danger); color: var(--danger);" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Выйти
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Проверка авторизации
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (!token) {
+        window.location.href = 'indexx.html';
+        return;
+      }
+      
+      if (user.role !== 'owner') {
+        alert('У вас нет доступа к этой странице');
+        window.location.href = 'indexx.html';
+        return;
+      }
+
+      document.getElementById('ownerName').innerHTML = 
+        user.full_name + ' <span class="profile-badge"><i class="fas fa-crown"></i> Владелец</span>';
+      document.getElementById('ownerEmail').innerHTML = 
+        '<i class="fas fa-envelope"></i> ' + user.email;
+      
+      loadStaffStats();
+      loadRecentStaff();
+      loadAllStaff();
+    });
+
+    // Загрузка статистики
+    async function loadStaffStats() {
+      try {
+        const response = await fetch('/api/owner/stats', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        const data = await response.json();
+        
+        document.getElementById('totalStaff').textContent = data.total || 0;
+        document.getElementById('activeToday').textContent = data.active || 0;
+        document.getElementById('totalServices').textContent = data.services || 0;
+        document.getElementById('statTotal').textContent = data.total || 0;
+        document.getElementById('statActive').textContent = data.active || 0;
+        document.getElementById('statNew').textContent = data.new || 0;
+      } catch (error) {
+        console.error('Ошибка загрузки статистики:', error);
+      }
+    }
+
+    // Загрузка последних сотрудников
+    async function loadRecentStaff() {
+      try {
+        const response = await fetch('/api/owner/staff/recent', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        const data = await response.json();
+        
+        const tbody = document.getElementById('recentStaffList');
+        
+        if (data.staff && data.staff.length > 0) {
+          tbody.innerHTML = data.staff.map(s => `
+            <tr>
+              <td>${s.full_name}</td>
+              <td>${s.email}</td>
+              <td>${s.specialization || '—'}</td>
+              <td>${s.created_at}</td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Нет сотрудников</td></tr>';
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки:', error);
+      }
+    }
+
+    // Загрузка всех сотрудников
+    async function loadAllStaff() {
+      try {
+        const response = await fetch('/api/owner/staff', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        const data = await response.json();
+        
+        const tbody = document.getElementById('staffList');
+        const countDiv = document.getElementById('staffCount');
+        
+        if (data.staff && data.staff.length > 0) {
+          countDiv.textContent = `${data.staff.length} сотрудников`;
+          tbody.innerHTML = data.staff.map(s => `
+            <tr>
+              <td>${s.id.substring(0, 8)}...</td>
+              <td>${s.full_name}</td>
+              <td>${s.email}</td>
+              <td>${s.specialization || '—'}</td>
+              <td><span class="status-badge ${!s.is_active ? 'inactive' : ''}">${s.is_active ? 'Активен' : 'Неактивен'}</span></td>
+              <td>${s.created_at}</td>
+              <td>
+                <button class="btn btn-small btn-outline" onclick="viewStaff('${s.id}')" title="Просмотр">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-small btn-danger" onclick="toggleStaffStatus('${s.id}', ${!s.is_active})" title="${s.is_active ? 'Деактивировать' : 'Активировать'}">
+                  <i class="fas ${s.is_active ? 'fa-ban' : 'fa-check'}"></i>
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          countDiv.textContent = '0 сотрудников';
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет сотрудников</td></tr>';
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки:', error);
+      }
+    }
+
+    // Создание сотрудника
+    document.getElementById('createStaffForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const specialization = document.getElementById('specialization').value;
+
+      if (!firstName || !lastName || !email || !password || !specialization) {
+        showError('Заполните все поля');
+        return;
+      }
+
+      const btn = document.getElementById('createBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="loading"></span> Сохранение...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/api/owner/staff', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            full_name: `${firstName} ${lastName}`,
+            email: email,
+            password: password,
+            specialization: specialization
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showSuccess('Сотрудник успешно добавлен в базу данных!');
+          clearForm();
+          loadStaffStats();
+          loadRecentStaff();
+          loadAllStaff();
+        } else {
+          showError(data.error || 'Ошибка при добавлении');
+        }
+      } catch (error) {
+        showError('Ошибка подключения к серверу');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    // Поиск сотрудников
+    async function searchStaff() {
+      const query = document.getElementById('searchInput').value.trim();
+      
+      if (!query) {
+        document.getElementById('searchResults').innerHTML = 
+          '<tr><td colspan="5" style="text-align: center;">Введите данные для поиска</td></tr>';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/owner/staff/search?q=${encodeURIComponent(query)}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        const data = await response.json();
+        
+        const tbody = document.getElementById('searchResults');
+        
+        if (data.staff && data.staff.length > 0) {
+          tbody.innerHTML = data.staff.map(s => `
+            <tr>
+              <td>${s.full_name}</td>
+              <td>${s.email}</td>
+              <td>${s.specialization || '—'}</td>
+              <td><span class="status-badge ${!s.is_active ? 'inactive' : ''}">${s.is_active ? 'Активен' : 'Неактивен'}</span></td>
+              <td>
+                <button class="btn btn-small btn-outline" onclick="viewStaff('${s.id}')">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Ничего не найдено</td></tr>';
+        }
+      } catch (error) {
+        console.error('Ошибка поиска:', error);
+      }
+    }
+
+    // Просмотр сотрудника
+    function viewStaff(id) {
+      alert(`ID сотрудника: ${id}\n(Здесь будет полная информация)`);
+    }
+
+    // Изменение статуса
+    async function toggleStaffStatus(id, activate) {
+      if (!confirm(`Вы уверены, что хотите ${activate ? 'активировать' : 'деактивировать'} сотрудника?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/owner/staff/${id}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({ active: activate })
+        });
+
+        if (response.ok) {
+          showSuccess(`Сотрудник ${activate ? 'активирован' : 'деактивирован'}`);
+          loadAllStaff();
+          loadStaffStats();
+        } else {
+          showError('Ошибка при изменении статуса');
+        }
+      } catch (error) {
+        showError('Ошибка подключения к серверу');
+      }
+    }
+
+    function clearForm() {
+      document.getElementById('createStaffForm').reset();
+    }
+
+    function showSuccess(message) {
+      const alert = document.getElementById('successAlert');
+      alert.textContent = message;
+      alert.style.display = 'block';
+      setTimeout(() => {
+        alert.style.display = 'none';
+      }, 3000);
+    }
+
+    function showError(message) {
+      const alert = document.getElementById('errorAlert');
+      alert.textContent = message;
+      alert.style.display = 'block';
+      setTimeout(() => {
+        alert.style.display = 'none';
+      }, 3000);
+    }
+
+    function openTab(event, tabName) {
+      const tabPanes = document.getElementsByClassName('tab-pane');
+      for (let i = 0; i < tabPanes.length; i++) {
+        tabPanes[i].classList.remove('active');
+      }
+
+      const tabs = document.getElementsByClassName('tab');
+      for (let i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+      }
+
+      document.getElementById(tabName).classList.add('active');
+      event.currentTarget.classList.add('active');
+
+      if (tabName === 'list') {
+        loadAllStaff();
+      }
+    }
+
+    function logout() {
+      if (confirm('Выйти из аккаунта?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'indexx.html';
+      }
+    }
+  </script>
+</body>
+</html>

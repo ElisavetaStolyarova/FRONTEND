@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; img-src * data:; connect-src *;">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Личный кабинет | Клиент</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="indexx.html">
+  <style>
+    :root {
+      --bg: #0f0f17;
+      --card: #1a1a2e;
+      --purple: #8b5cf6;
+      --purple-dark: #7c3aed;
+      --purple-light: #a78bfa;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --danger: #f87171;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --border: #2d3748;
+      --input-bg: #1e293b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 50%, #a78bfa 100%);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+      top: -200px;
+      right: -200px;
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.2) 0%, transparent 70%);
+      bottom: -250px;
+      left: -250px;
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(15, 15, 23, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      position: relative;
+      z-index: 1;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--purple), #4c1d95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            border: 3px solid var(--purple-light);
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.5);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            color: var(--purple-light);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-email {
+            color: var(--text-light);
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--purple-light);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .profile-badge {
+            background: var(--purple);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .profile-balance {
+            margin-left: auto;
+            min-width: 150px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .balance-block {
+            text-align: right;
+        }
+
+        .balance-label {
+            color: var(--text-light);
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .balance-amount {
+            color: var(--text);
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--purple-light);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .profile-badge {
+      background: var(--purple);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab i {
+      font-size: 18px;
+    }
+
+    .tab:hover {
+      color: var(--purple-light);
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .tab.active {
+      background: var(--purple);
+      color: white;
+    }
+
+    .tab-content {
+      min-height: 400px;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .services-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .services-table th {
+            text-align: left;
+            padding: 15px 10px;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .services-table td {
+            padding: 12px 10px;
+            color: var(--text);
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status.completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status.cancelled {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .show-more {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .show-more a {
+            color: var(--purple-light);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .show-more a:hover {
+            color: var(--purple);
+            text-decoration: underline;
+        }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .empty-state i {
+      font-size: 20px;
+      color: var(--purple);
+      opacity: 0.3;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      color: var(--purple-light);
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: var(--text-light);
+      font-size: 14px;
+      max-width: 300px;
+      margin: 0 auto 20px;
+    }
+
+    .btn {
+      background: var(--purple);
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: var(--purple-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--purple);
+      color: var(--purple-light);
+      background: rgba(139, 92, 246, 0.1);
+      transform: none;
+      box-shadow: none;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--purple-light);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .card-title {
+      color: var(--purple-light);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(139, 92, 246, 0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--purple-light);
+    }
+
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    .setting-label {
+      color: var(--text);
+    }
+
+    .setting-value {
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border);
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--purple);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+      }
+
+      .profile-stats {
+        justify-content: center;
+      }
+
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        justify-content: center;
+      }
+
+      .tab {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .profile-stats {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .profile-name {
+        font-size: 24px;
+        flex-direction: column;
+      }
+    }
+
+    .status {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .status-active {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .status-waiting {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name">
+         
+        </div>
+        <div class="profile-email">
+          <i class="fas fa-envelope"></i>
+          <i class="fas fa-phone" style="margin-left: 15px;"></i> +7 (999) 123-45-67
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-value"></div>
+            <div class="stat-label">Всего записей</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value"></div>
+            <div class="stat-label">Активных</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value"></div>
+            <div class="stat-label">Завершено</div>
+          </div>
+          <div class="profile-balance">
+          <div class="balance-block">
+                </div>
+              </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="openTab(event, 'dashboard')">
+        <i class="fas fa-home"></i> Главная
+      </button>
+      <button class="tab" onclick="openTab(event, 'bookings')">
+        <i class="fas fa-calendar-alt"></i> Мои записи
+      </button>
+      
+      <button class="tab" onclick="openTab(event, 'messages')">
+        <i class="fas fa-envelope"></i> Сообщения
+        <span style="background: var(--danger); color: white; padding: 2px 8px; border-radius: 999px; font-size: 12px;"></span>
+      </button>
+      <button class="tab" onclick="openTab(event, 'settings')">
+        
+      </button>
+    </div>
+
+    <div class="tab-content">
+      <div id="dashboard" class="tab-pane active">
+        <div class="empty-state">
+          <i class="fas fa-home"></i>
+          <h3>Добро пожаловать в личный кабинет</h3>
+          <p>Здесь будет отображаться основная информация, последние записи и рекомендации</p>
+          <button class="btn" onclick="openTab(event, 'bookings')">
+            <i class="fas fa-calendar-plus"></i> Записаться
+          </button>
+        </div>
+      </div>
+
+      <div id="bookings" class="tab-pane">
+  <div class="empty-state">
+    <i class="fas fa-calendar-times"></i>
+    <h3>У вас нет активных записей</h3>
+    <p>Запишитесь на услугу, чтобы увидеть её здесь</p>
+    <a href="Last.html" class="btn">
+      
+      <i class="fas fa-calendar-plus"></i> Записаться
+    </a>
+  </div>
+</div>
+      <!-- История -->
+      <div id="history" class="tab-pane">
+        <div class="empty-state">
+          <table class="services-table">
+                <thead>
+                    
+                </tbody>
+            </table>
+        </div>
+      </div>
+
+      <!-- Избранное -->
+      <div id="favorites" class="tab-pane">
+        <div class="empty-state">
+          <i class="fas fa-heart"></i>
+          <h3>В избранном ничего нет</h3>
+          <p>Добавляйте понравившихся специалистов в избранное</p>
+          <button class="btn btn-outline">
+            <i class="fas fa-search"></i> Найти специалистов
+          </button>
+        </div>
+      </div>
+
+      
+
+      <!-- Сообщения -->
+      <div id="messages" class="tab-pane">
+        <div class="grid-2">
+          <!-- Карточка сообщения (пустая) -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-headset"></i>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Карточка уведомлений -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Уведомления</div>
+              <div class="card-icon">
+                <i class="fas fa-bell"></i>
+              </div>
+            </div>
+            <p style="color: var(--text-light);">Новых уведомлений нет</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Настройки -->
+      <div id="settings" class="tab-pane">
+        <div class="grid-2">
+          <!-- Личные данные -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Личные данные</div>
+              <div class="card-icon">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <div class="settings-list">
+              <div class="setting-item">
+                <span class="setting-label">Имя</span>
+                <span class="setting-value"></span>
+              </div>
+              <div class="setting-item">
+                <span class="setting-label">Фамилия</span>
+                <span class="setting-value"></span>
+              </div>
+              <div class="setting-item">
+                <span class="setting-label">Email</span>
+                <span class="setting-value">a******@mail.ru</span>
+              </div>
+              <div class="setting-item">
+                <span class="setting-label">Телефон</span>
+                <span class="setting-value">+7 *** *** ** 67</span>
+              </div>
+            </div>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 15px;">
+              <i class="fas fa-edit"></i> Редактировать
+            </button>
+          </div>
+
+          <!-- Безопасность -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Безопасность</div>
+              <div class="card-icon">
+                <i class="fas fa-lock"></i>
+              </div>
+            </div>
+            <div class="settings-list">
+              <div class="setting-item">
+                <span class="setting-label">Пароль</span>
+                <span class="setting-value">••••••••</span>
+              </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        <hr>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button class="btn btn-outline">
+            <i class="fas fa-times"></i> Отмена
+          </button>
+          <button class="btn">
+            <i class="fas fa-save"></i> Сохранить изменения
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Нижняя панель -->
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+      <div style="color: var(--text-light); font-size: 14px;">
+        <i class="fas fa-shield-alt" style="color: var(--purple-light); margin-right: 8px;"></i>
+        
+     </div>
+     <button class="btn btn-outline" style="border-color: var(--danger); color: var(--danger);" onclick="if(confirm('Выйти из аккаунта?')) window.location.href='indexx.html'">
+      Выйти
+    </button>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'indexx.html';
+      return;
+    }
+    
+    loadProfile();
+    loadBalance();
+    loadMessages();
+    
+    if (document.getElementById('history').classList.contains('active')) {
+      loadHistory();
+    }
+  });
+
+  async function loadProfile() {
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await fetch('/api/client/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        document.querySelector('.profile-name').innerHTML = data.profile.full_name;
+        document.querySelector('.profile-email i.fa-envelope').parentNode.innerHTML = 
+          `<i class="fas fa-envelope"></i> ${data.profile.email} ${data.profile.phone ? `<i class="fas fa-phone" style="margin-left: 15px;"></i> ${data.profile.phone}` : ''}`;
+        
+        const stats = document.querySelectorAll('.stat-value');
+        stats[0].textContent = data.stats.total;
+        stats[1].textContent = data.stats.active;
+        stats[2].textContent = data.stats.completed;
+        
+        const nameParts = data.profile.full_name.split(' ');
+        document.querySelectorAll('.setting-value')[0].textContent = nameParts[0] || 'Александр';
+        document.querySelectorAll('.setting-value')[1].textContent = nameParts.slice(1).join(' ') || 'Петров';
+        document.querySelectorAll('.setting-value')[2].textContent = data.profile.email.replace(/(.{3})(.*)(?=@)/, 
+          (match, p1, p2) => p1 + '*'.repeat(p2.length));
+        document.querySelectorAll('.setting-value')[3].textContent = data.profile.phone ? 
+          data.profile.phone.replace(/(\+\d)(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 *** *** ** $5') : 
+          '+7 *** *** ** 67';
+      } else if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'indexx.html';
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки профиля:', error);
+    }
+  }
+
+  async function loadBalance() {
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await fetch('/api/client/balance', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        document.querySelector('.balance-amount').textContent = `${data.balance} ${data.currency}`;
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки баланса:', error);
+    }
+  }
+
+  async function loadMessages() {
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await fetch('/api/client/messages', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Обновляем счетчик сообщений
+        const messageTab = document.querySelector('.tab:nth-child(4) span');
+        if (messageTab) {
+          if (data.unread_count > 0) {
+            messageTab.textContent = data.unread_count;
+            messageTab.style.display = 'inline';
+          } else {
+            messageTab.style.display = 'none';
+          }
+        }
+        
+        // Если есть сообщения, показываем их
+        if (data.messages.length > 0) {
+          const messagesContainer = document.querySelector('#messages .grid-2');
+          if (messagesContainer) {
+            messagesContainer.innerHTML = data.messages.map(msg => `
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">${msg.sender}</div>
+                  <div class="card-icon">
+                    <i class="fas ${msg.type === 'notification' ? 'fa-bell' : 'fa-comment'}"></i>
+                  </div>
+                </div>
+                <p style="color: var(--text); margin-bottom: 10px;">${msg.content}</p>
+                <p style="color: var(--text-light); font-size: 12px;">${msg.date}</p>
+              </div>
+            `).join('');
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки сообщений:', error);
+    }
+  }
+
+  // Загрузка истории
+  async function loadHistory(page = 1) {
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await fetch(`/api/client/history?page=${page}&limit=10`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const tbody = document.querySelector('#history tbody');
+        
+        if (tbody) {
+          if (data.history.length > 0) {
+            tbody.innerHTML = data.history.map(item => `
+              <tr>
+                <td>${item.number}</td>
+                <td>${item.specialist}</td>
+                <td>${item.service}</td>
+                <td>${item.date}</td>
+                <td><span class="status ${item.status_class}">${item.status}</span></td>
+                <td>${item.amount}</td>
+              </tr>
+            `).join('');
+            
+            // Добавляем пагинацию
+            const showMore = document.querySelector('.show-more');
+            if (showMore) {
+              if (data.pagination.has_more) {
+                showMore.style.display = 'block';
+                showMore.innerHTML = `<a href="#" onclick="loadHistory(${page + 1}); return false;">Показать еще</a>`;
+              } else {
+                showMore.style.display = 'none';
+              }
+            }
+          } else {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">История записей пуста</td></tr>';
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки истории:', error);
+    }
+  }
+
+  // Загрузка активных записей
+  async function loadBookings() {
+  console.log('📥 Загрузка записей...');
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    console.error(' Нет токена');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/client/appointments', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    console.log('📊 Статус ответа:', response.status);
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log(' Получены записи:', data);
+      
+      const bookingsDiv = document.getElementById('bookings');
+      
+      if (data.appointments && data.appointments.length > 0) {
+        console.log(`📋 Найдено ${data.appointments.length} записей`);
+        
+        // Создаем список записей
+        let html = '<div style="display: grid; gap: 20px;">';
+        data.appointments.forEach(apt => {
+          html += `
+            <div class="card" style="padding: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                <div>
+                  <h3 style="color: var(--purple-light); margin-bottom: 5px;">${apt.service}</h3>
+                  <p style="color: var(--text-light); font-size: 14px;">${apt.staff}</p>
+                </div>
+                <span class="status ${apt.status === 'Ожидание' ? 'status-waiting' : 'status-active'}">${apt.status}</span>
+              </div>
+              <div style="display: flex; gap: 20px; color: var(--text); flex-wrap: wrap;">
+                <div><i class="fas fa-calendar"></i> ${apt.date}</div>
+                <div><i class="fas fa-clock"></i> ${apt.time} - ${apt.end_time}</div>
+                <div><i class="fas fa-ruble-sign"></i> ${apt.price} ₽</div>
+              </div>
+              <button class="btn btn-outline" style="margin-top: 15px;" onclick="cancelAppointment('${apt.id}')">
+                <i class="fas fa-times"></i> Отменить запись
+              </button>
+            </div>
+          `;
+        });
+        html += '</div>';
+        bookingsDiv.innerHTML = html;
+      } else {
+        console.log('📭 Нет активных записей');
+        // Показываем пустое состояние
+        bookingsDiv.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-calendar-times"></i>
+            <h3>У вас нет активных записей</h3>
+            <p>Запишитесь на услугу, чтобы увидеть её здесь</p>
+            <a href="Last.html" class="btn">
+              <i class="fas fa-calendar-plus"></i> Записаться
+            </a>
+          </div>
+        `;
+      }
+    } else {
+      console.error(' Ошибка загрузки:', response.status);
+    }
+  } catch (error) {
+    console.error(' Ошибка загрузки записей:', error);
+  }
+}
+
+  // Отмена записи
+  async function cancelAppointment(id) {
+    if (!confirm('Вы уверены, что хотите отменить запись?')) {
+      return;
+    }
+    
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await fetch(`/api/appointments/${id}/cancel`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        alert('Запись отменена');
+        loadBookings(); // Перезагружаем список записей
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Ошибка при отмене записи');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка подключения к серверу');
+    }
+  }
+
+  // Пополнение баланса
+  async function topUpBalance() {
+    const amount = prompt('Введите сумму пополнения:', '1000');
+    if (!amount) return;
+    
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      alert('Введите корректную сумму');
+      return;
+    }
+    
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await fetch('/api/client/balance/topup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ amount: numAmount })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Баланс успешно пополнен! Новый баланс: ${data.new_balance} ₽`);
+        loadBalance(); // Обновляем баланс
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Ошибка при пополнении баланса');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка подключения к серверу');
+    }
+  }
+
+  // Обновленный openTab с загрузкой данных
+  function openTab(event, tabName) {
+  console.log(' Открываем вкладку:', tabName);
+  
+  // Скрыть все вкладки
+  const tabPanes = document.getElementsByClassName('tab-pane');
+  for (let i = 0; i < tabPanes.length; i++) {
+    tabPanes[i].classList.remove('active');
+  }
+
+  // Убрать активный класс у всех кнопок
+  const tabs = document.getElementsByClassName('tab');
+  for (let i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove('active');
+  }
+
+  // Показать выбранную вкладку и активировать кнопку
+  document.getElementById(tabName).classList.add('active');
+  event.currentTarget.classList.add('active');
+  
+  // Загружаем данные для вкладок
+  if (tabName === 'bookings') {
+    console.log(' Загружаем записи...');
+    loadBookings();
+  } else if (tabName === 'history') {
+    console.log(' Загружаем историю...');
+    loadHistory();
+  } else if (tabName === 'messages') {
+    console.log(' Загружаем сообщения...');
+    loadMessages();
+  }
+
+  // Прокрутка к верхушке контента
+  document.querySelector('.tab-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+    
+
+  // Выход из аккаунта
+  function logout() {
+    if (confirm('Выйти из аккаунта?')) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'indexx.html';
+    }
+  }
+
+  // Обновляем обработчики кнопок
+  document.addEventListener('DOMContentLoaded', function() {
+    // Кнопка пополнения баланса
+    const topupBtn = document.querySelector('.profile-balance .btn');
+    if (topupBtn) {
+      topupBtn.onclick = topUpBalance;
+    }
+    
+    // Кнопка выхода
+    const logoutBtn = document.querySelector('.btn-outline[style*="border-color: var(--danger)"]');
+    if (logoutBtn) {
+      logoutBtn.onclick = logout;
+    }
+    
+    // Кнопка записи на главной
+    const bookBtn = document.querySelector('#dashboard .btn');
+    if (bookBtn) {
+      bookBtn.onclick = (e) => {
+        e.preventDefault();
+        window.location.href = 'Last.html';
+      };
+    }
+    
+    // Кнопка записи во вкладке записей
+    const bookLink = document.querySelector('#bookings a[href="Last.html"]');
+    if (bookLink) {
+      bookLink.onclick = (e) => {
+        e.preventDefault();
+        window.location.href = 'Last.html';
+      };
+    }
+  });
+  // Загружаем записи сразу при переходе на страницу client.html
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🔍 Страница клиента загружена');
+  
+  // Если открыта вкладка bookings, загружаем записи
+  if (document.getElementById('bookings').classList.contains('active')) {
+    loadBookings();
+  }
+});
+  </script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; img-src * data:; connect-src *;">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход для специалистов</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f0f17;
+      --card: #1a1a2e;
+      --purple: #8b5cf6;
+      --purple-dark: #7c3aed;
+      --purple-light: #a78bfa;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --border: #2d3748;
+      --input-bg: #1e293b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 50%, #a78bfa 100%);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      max-width: 400px;
+      width: 100%;
+      background: rgba(15, 15, 23, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      padding: 40px;
+    }
+
+    h1 {
+      color: var(--purple-light);
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: var(--text-light);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--purple);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--purple);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--purple-dark);
+      transform: translateY(-2px);
+    }
+
+    .error {
+      color: #f87171;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 15px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Вход для специалистов</h1>
+    
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="specialist@mail.ru">
+    </div>
+    
+    <div class="form-group">
+      <label>Пароль</label>
+      <input type="password" id="password" placeholder="••••••••">
+    </div>
+    
+    <button class="btn" onclick="login()">Войти</button>
+    
+    <div class="error" id="errorMessage">Неверный email или пароль</div>
+  </div>
+
+  <script>
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      // Загружаем специалистов из localStorage
+      const specialists = JSON.parse(localStorage.getItem('specialists') || '[]');
+      
+      const specialist = specialists.find(s => s.email === email && s.password === password);
+      
+      if (specialist) {
+        // Открываем страницу специалиста
+        const pageContent = createSpecialistPage(specialist);
+        const newWindow = window.open();
+        newWindow.document.write(pageContent);
+        newWindow.document.close();
+      } else {
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    }
+
+    function createSpecialistPage(spec) {
+      return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${spec.firstName} ${spec.lastName} | Специалист</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f0f17;
+      --card: #1a1a2e;
+      --purple: #8b5cf6;
+      --purple-dark: #7c3aed;
+      --purple-light: #a78bfa;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --border: #2d3748;
+      --input-bg: #1e293b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 50%, #a78bfa 100%);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(15, 15, 23, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      padding: 30px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--purple), #4c1d95);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: white;
+      border: 3px solid var(--purple-light);
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-size: 28px;
+      color: var(--purple-light);
+      margin-bottom: 5px;
+    }
+
+    .profile-specialization {
+      color: var(--text-light);
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .profile-email {
+      color: var(--text-light);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--purple-light);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      color: var(--purple-light);
+      font-size: 18px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .info-item {
+      padding: 10px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .info-label {
+      color: var(--text-light);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    .btn-logout {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <i class="fas fa-user-tie"></i>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name">
+          ${spec.firstName} ${spec.lastName}
+        </div>
+        <div class="profile-specialization">
+          <i class="fas fa-briefcase"></i> ${spec.specialization}
+        </div>
+        <div class="profile-email">
+          <i class="fas fa-envelope"></i> ${spec.email}
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Записей</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Клиентов</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-info-circle"></i>
+        Информация
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">ID специалиста</div>
+          <div class="info-value">${spec.id}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Дата регистрации</div>
+          <div class="info-value">${spec.createdAt}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Email</div>
+          <div class="info-value">${spec.email}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Специализация</div>
+          <div class="info-value">${spec.specialization}</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-logout" onclick="window.close()">
+      <i class="fas fa-sign-out-alt"></i> Выйти
+    </button>
+  </div>
+</body>
+</html>`;
+    }
+      // Проверка авторизации при загрузке
+  document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    if (token && user.role === 'staff') {
+      console.log('✅ Уже авторизован как специалист');
+      // Здесь можно загрузить данные специалиста
+    }
+  });
+
+  async function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('errorMessage');
+
+    if (!email || !password) {
+      alert('Заполните все поля');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        if (data.user.role === 'staff') {
+          // Создаем страницу специалиста
+          createSpecialistPage(data.user);
+        } else {
+          alert('Эта страница только для специалистов');
+          window.location.href = 'indexx.html';
+        }
+      } else {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = data.error || 'Ошибка входа';
+      }
+    } catch (error) {
+      alert('Ошибка подключения к серверу');
+    }
+  }
+
+  function createSpecialistPage(user) {
+    // Здесь код создания страницы специалиста
+    // (сохраняем существующий функционал)
+    window.location.href = 'specialist.html'; // если есть отдельная страница
+  }
+  </script>
+</body>
+</html>

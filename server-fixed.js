@@ -18,21 +18,34 @@ const pool = new Pool({
 
 pool.connect((err) => {
   if (err) {
-    console.error('❌ Ошибка БД:', err.message);
+    console.error(' Ошибка БД:', err.message);
   } else {
-    console.log('✅ БД подключена');
+    console.log(' БД подключена');
   }
 });
 
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+// Главная страница - перенаправление на indexx.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'indexx.html'));
+});
 
 // Middleware для CORS и CSP
 app.use((req, res, next) => {
   res.setHeader('Content-Security-Policy', "default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; img-src * data:; connect-src *;");
   next();
 });
+// ============= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =============
+function safeString(str) {
+  if (str === null || str === undefined) return '';
+  try {
+    return String(str);
+  } catch (e) {
+    return '';
+  }
+}
 
 // ============= АУТЕНТИФИКАЦИЯ =============
 
@@ -63,7 +76,7 @@ app.post('/api/auth/login', async (req, res) => {
         id: user.id,
         email: user.email,
         role: user.role,
-        full_name: user.full_name
+        full_name: safeString(user.full_name)
       },
       process.env.JWT_SECRET || 'secret-key-2026',
       { expiresIn: '24h' }
@@ -76,7 +89,7 @@ app.post('/api/auth/login', async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        full_name: user.full_name,
+        full_name: safeString(user.full_name),
         role: user.role
       }
     });
@@ -155,9 +168,9 @@ app.get('/api/client/profile', async (req, res) => {
     res.json({
       profile: {
         id: user.id,
-        full_name: user.full_name,
-        email: user.email,
-        phone: user.phone || '+7 (999) 123-45-67',
+        full_name: safeString(user.full_name),
+        email: safeString(user.email),
+        phone: safeString(user.phone) || '+7 (999) 123-45-67',
         registered_at: user.created_at
       },
       stats: {
@@ -206,9 +219,9 @@ app.get('/api/client/appointments', async (req, res) => {
     res.json({
       appointments: result.rows.map(apt => ({
         id: apt.id,
-        service: apt.service_name,
-        staff: apt.staff_name,
-        organization: apt.organization_name,
+        service: safeString(apt.service_name),
+        staff: safeString(apt.staff_name),
+        organization: safeString(apt.organization_name),
         date: new Date(apt.start_at).toLocaleDateString('ru-RU'),
         time: new Date(apt.start_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
         end_time: new Date(apt.end_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
@@ -265,8 +278,8 @@ app.get('/api/client/history', async (req, res) => {
       history: result.rows.map((item, index) => ({
         number: `№${(offset + index + 1)}`,
         id: item.id,
-        specialist: item.staff_name,
-        service: item.service_name,
+        specialist: safeString(item.staff_name),
+        service: safeString(item.service_name),
         date: item.date,
         status: item.status === 'completed' ? 'Выполнен' : 'Отменён',
         status_class: item.status === 'completed' ? 'completed' : 'cancelled',
@@ -330,8 +343,8 @@ app.get('/api/staff', async (req, res) => {
     res.json({
       staff: result.rows.map(s => ({
         id: s.id,
-        name: s.full_name,
-        specialization: s.specialization || 'Специалист'
+        name: safeString(s.full_name),
+        specialization: safeString(s.specialization) || 'Специалист'
       }))
     });
 
@@ -354,7 +367,7 @@ app.get('/api/services', async (req, res) => {
     res.json({
       services: result.rows.map(s => ({
         id: s.id,
-        title: s.title,
+        title: safeString(s.title),
         price: parseFloat(s.base_price).toFixed(2),
         duration: s.duration_minutes
       }))
@@ -451,22 +464,6 @@ app.post('/api/appointments', async (req, res) => {
   }
 });
 
-// ============= БАЛАНС =============
-
-app.get('/api/client/balance', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Нет токена' });
-
-  try {
-    res.json({
-      balance: '1923.35',
-      currency: '₽'
-    });
-  } catch (error) {
-    res.json({ balance: '0.00', currency: '₽' });
-  }
-});
-
 // ============= Middleware для проверки роли владельца =============
 const requireOwner = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -521,7 +518,16 @@ app.get('/api/owner/staff', requireOwner, async (req, res) => {
       ORDER BY created_at DESC
     `);
 
-    res.json({ staff: result.rows });
+    const staff = result.rows.map(row => ({
+      id: row.id,
+      full_name: safeString(row.full_name),
+      email: safeString(row.email),
+      specialization: row.specialization ? safeString(row.specialization) : null,
+      is_active: row.is_active,
+      created_at: row.created_at
+    }));
+
+    res.json({ staff });
   } catch (error) {
     console.error('Ошибка получения сотрудников:', error);
     res.status(500).json({ error: 'Ошибка сервера' });
@@ -532,7 +538,7 @@ app.get('/api/owner/staff', requireOwner, async (req, res) => {
 app.get('/api/owner/staff/recent', requireOwner, async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT id, full_name, email, specialization, 
+      SELECT full_name, email, specialization, 
              to_char(created_at, 'DD.MM.YYYY') as created_at
       FROM users 
       WHERE role = 'staff'
@@ -540,7 +546,14 @@ app.get('/api/owner/staff/recent', requireOwner, async (req, res) => {
       LIMIT 5
     `);
 
-    res.json({ staff: result.rows });
+    const staff = result.rows.map(row => ({
+      full_name: safeString(row.full_name),
+      email: safeString(row.email),
+      specialization: row.specialization ? safeString(row.specialization) : null,
+      created_at: row.created_at
+    }));
+
+    res.json({ staff });
   } catch (error) {
     console.error('Ошибка получения сотрудников:', error);
     res.status(500).json({ error: 'Ошибка сервера' });
@@ -559,7 +572,15 @@ app.get('/api/owner/staff/search', requireOwner, async (req, res) => {
       ORDER BY full_name
     `, [`%${q}%`]);
 
-    res.json({ staff: result.rows });
+    const staff = result.rows.map(row => ({
+      id: row.id,
+      full_name: safeString(row.full_name),
+      email: safeString(row.email),
+      specialization: row.specialization ? safeString(row.specialization) : null,
+      is_active: row.is_active
+    }));
+
+    res.json({ staff });
   } catch (error) {
     console.error('Ошибка поиска:', error);
     res.status(500).json({ error: 'Ошибка сервера' });
@@ -582,7 +603,7 @@ app.post('/api/owner/staff', requireOwner, async (req, res) => {
       RETURNING id, full_name, email, specialization
     `, [email, password, full_name, specialization]);
 
-    console.log('✅ Создан новый сотрудник:', full_name);
+    console.log(' Создан новый сотрудник:', full_name);
 
     res.status(201).json({
       message: 'Сотрудник успешно создан',
@@ -612,27 +633,17 @@ app.put('/api/owner/staff/:id/status', requireOwner, async (req, res) => {
   }
 });
 
-// ============= НОВЫЕ МАРШРУТЫ (которые были добавлены) =============
-
-// Тестовый маршрут
+// ============= ТЕСТОВЫЙ МАРШРУТ =============
 app.get('/api/test', (req, res) => {
-    res.json({ message: 'API работает!' });
-});
-
-// Дополнительный маршрут для сообщений клиента (если не был определен ранее)
-app.get('/api/client/messages', (req, res) => {
-    res.json({
-        unread_count: 0,
-        messages: []
-    });
+  res.json({ message: ' API работает!', time: new Date().toLocaleString() });
 });
 
 // ============= ЗАПУСК СЕРВЕРА =============
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`\n СЕРВЕР ЗАПУЩЕН НА ПОРТУ ${PORT}`);
-  console.log(` Откройте браузер: http://localhost:${PORT}`);
+  console.log(`\n🚀 СЕРВЕР ЗАПУЩЕН НА ПОРТУ ${PORT}`);
+  console.log(`📱 Откройте браузер: http://localhost:${PORT}`);
   console.log(`\n Тестовые данные:`);
   console.log(`   Клиент: client@test.ru / 123456`);
   console.log(`   Специалист: nikolay@mail.ru / 123456`);
